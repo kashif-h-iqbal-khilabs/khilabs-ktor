@@ -19,10 +19,10 @@ function App() {
 
   if (response?.authenticated === true) {
     return (
-      <div> AUTHENTICATED </div>
+      <div> I AM AUTHENTICATED </div>
     );
   }
-  return <div>UNAUTHENTICATED</div>
+  return <div>I AM UNAUTHENTICATED</div>
 
 }
 
