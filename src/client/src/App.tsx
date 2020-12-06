@@ -12,9 +12,15 @@ function App() {
   };
 
   useEffect(() => {
-    fetch('/login', requestOptions)
-      .then(response => response.status === 200 ? response.json() : { authenticated: 'false' })
-      .then(data => setResponse(data))
+    // POST request
+    // fetch('/login', requestOptions)
+    //   .then(response => response.status === 200 ? response.json() : { authenticated: 'false' })
+    //   .then(data => setResponse(data))
+
+    fetch('/json/jackson')
+      .then(response => response.json())
+      .then(data => console.log(data));
+
   }, [])
 
   if (response?.authenticated === true) {

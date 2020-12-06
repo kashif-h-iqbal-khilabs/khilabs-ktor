@@ -13,6 +13,7 @@ import io.ktor.http.cio.websocket.*
 import java.time.*
 import com.fasterxml.jackson.databind.*
 import io.ktor.jackson.*
+import kotlinx.coroutines.Dispatchers
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -76,8 +77,18 @@ fun Application.module(testing: Boolean = false) {
         get("/json/jackson") {
             call.respond(mapOf("hello" to "world222"))
         }
+
+
+        post("/posting"){
+            with(Dispatchers.IO) {
+                val post = call.receive<String>()
+                println(post.toString())
+
+            }
+            call.respond(mapOf<String, Boolean>("OK" to true))
+        }
     }
 }
 
-data class postRequest(val name: String, val age: Int)
+data class PostingModel(val username: String, val password: Int)
 
