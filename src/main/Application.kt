@@ -13,7 +13,14 @@ import io.ktor.http.cio.websocket.*
 import java.time.*
 import com.fasterxml.jackson.databind.*
 import io.ktor.jackson.*
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
+import java.lang.Thread.yield
+import kotlin.reflect.typeOf
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -33,6 +40,7 @@ fun Application.module(testing: Boolean = false) {
     install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Put)
+        method(HttpMethod.Post)
         method(HttpMethod.Delete)
         method(HttpMethod.Patch)
         header(HttpHeaders.Authorization)
@@ -80,13 +88,52 @@ fun Application.module(testing: Boolean = false) {
 
 
         post("/posting"){
-            with(Dispatchers.IO) {
                 val post = call.receive<String>()
                 println(post.toString())
-
-            }
-            call.respond(mapOf<String, Boolean>("OK" to true))
+                call.respond(mapOf<String, Boolean>("OK" to false))
         }
+
+        post("/upload"){
+            val multipart = call.receiveMultipart()
+            val uploadDir = "/Users/kashif-netcore/dev/code/khilabs-ktor"
+            multipart.forEachPart {
+                when(it){
+                    is PartData.FormItem -> {
+                        if(it.name == "kashif") println("kashif in the house")
+                    }
+                    is PartData.FileItem -> {
+                        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") val ext = File(it.originalFileName).extension
+                        val file = File(uploadDir, "upload-${System.currentTimeMillis()}.$ext")
+                        it.streamProvider().use { input -> file.outputStream().buffered().use { output -> input.copyToSuspend(output) } }
+                    }
+                }
+                it.dispose()
+            }
+        }
+    }
+}
+
+suspend fun InputStream.copyToSuspend(
+    out: OutputStream,
+    bufferSize: Int = DEFAULT_BUFFER_SIZE,
+    yieldSize: Int = 4 * 1024 * 1024,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+): Long {
+    return withContext(dispatcher) {
+        val buffer = ByteArray(bufferSize)
+        var bytesCopied = 0L
+        var bytesAfterYield = 0L
+        while (true) {
+            val bytes = read(buffer).takeIf { it >= 0 } ?: break
+            out.write(buffer, 0, bytes)
+            if (bytesAfterYield >= yieldSize) {
+                yield()
+                bytesAfterYield %= yieldSize
+            }
+            bytesCopied += bytes
+            bytesAfterYield += bytes
+        }
+        return@withContext bytesCopied
     }
 }
 

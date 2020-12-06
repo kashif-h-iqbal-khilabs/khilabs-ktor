@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import { FileUpload } from './fileUpload.jsx';
 
 function App() {
 
@@ -28,7 +29,7 @@ function App() {
       <div> I AM AUTHENTICATED </div>
     );
   }
-  return <div>I AM UNAUTHENTICATED</div>
+  return (<FileUpload />)
 
 }
 
