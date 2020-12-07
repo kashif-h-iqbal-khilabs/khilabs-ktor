@@ -30,6 +30,7 @@ export const LoginScreen = (props: LoginScreenProps) =>  {
 
     const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
+        // make backend call here -> probably a thunk
         if (state.username == 'admin@littech.in' && state.password == 'secret') {
             alert('login in')
         } else {

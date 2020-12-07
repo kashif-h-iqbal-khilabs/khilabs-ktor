@@ -16,6 +16,10 @@ import io.ktor.jackson.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import main.Dao.users
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -27,6 +31,11 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+    val db = Database.connect(
+        "jdbc:postgresql://localhost:5432/khilabsauthorization", driver = "org.postgresql.Driver",
+        user = "postgres", password = "password"
+    )
+
     install(Compression) {
         gzip {
             priority = 1.0
@@ -64,7 +73,16 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
+            var userName = ""
+//            println("Cities: ${City.all().joinToString {it.name}}")
+            transaction {
+                for (user in users.selectAll()) {
+                        println("${user[users.username]} has password ${user[users.password]}")
+                    userName = user[users.username]
+                }
+            }
+            call.respondText(userName, contentType = ContentType.Text.Plain)
+
         }
 
         // Static feature. Try to access `/static/ktor_logo.svg`
