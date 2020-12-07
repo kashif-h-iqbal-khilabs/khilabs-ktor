@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { RouteComponentProps } from '@reach/router';
 import {
     Button,
     TextField,
@@ -11,7 +12,9 @@ import {
 } from "@material-ui/core";
 import './style.css';
 
-export const LoginScreen = () =>  {
+interface LoginScreenProps extends RouteComponentProps {}
+
+export const LoginScreen = (props: LoginScreenProps) =>  {
 
     const initialState = {
         username: '',
