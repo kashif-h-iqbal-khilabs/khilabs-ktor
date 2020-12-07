@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import { FileUpload } from './fileUpload.jsx';
-
+import { LoginScreen } from './screens/login.screen';
 function App() {
 
   const [response, setResponse] = useState<null | { authenticated: boolean }>(null)
@@ -29,7 +29,7 @@ function App() {
       <div> I AM AUTHENTICATED </div>
     );
   }
-  return (<FileUpload />)
+  return <LoginScreen />
 
 }
 
