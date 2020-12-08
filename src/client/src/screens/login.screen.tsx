@@ -16,13 +16,11 @@ interface LoginScreenProps extends RouteComponentProps {}
 
 export const LoginScreen = (props: LoginScreenProps) =>  {
 
-    const initialState = {
-        username: '',
-        password: ''
-    }
+        const initialState = {
+            username: '',
+            password: ''
+        }
 
-
-    
       useEffect(() =>{
         const requestOptions = {
             method: 'POST',

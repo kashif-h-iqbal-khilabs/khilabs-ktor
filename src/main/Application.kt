@@ -96,20 +96,22 @@ fun Application.module(testing: Boolean = false) {
 
         post("/login"){
             val loginModel: LoginModel = call.receive<LoginModel>()
-            var username = ""
+            var username: String? = null
 
             transaction {
-                val usersresults = users.select{(users.username.eq(loginModel.username) and users.password.eq(loginModel.password))}
-
-                for (user in usersresults){
+                val usersResults = users.select{(users.username.eq(loginModel.username) and users.password.eq(loginModel.password))}
+                for (user in usersResults){
                     username = user[users.username]
                 }
             }
-            if(username.isNotEmpty()){
-                call.respond(mapOf("authenticated" to true))
-            }else    {
-                call.respond(mapOf("authenticated" to false))
-            }
+
+             if (username.isNullOrEmpty())
+                 call.respond(authenticationResponse(false))
+             else
+                 call.respond(authenticationResponse(true))
+
+
+
         }
 
         get("/json/jackson") {
@@ -166,6 +168,8 @@ suspend fun InputStream.copyToSuspend(
         return@withContext bytesCopied
     }
 }
+
+fun authenticationResponse(isAuthenticated: Boolean): Map<String, Boolean>  = mapOf("authenticated" to isAuthenticated)
 
 
 data class LoginModel(val username: String, val password: String)
