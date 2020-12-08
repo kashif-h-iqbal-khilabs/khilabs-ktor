@@ -169,7 +169,7 @@ suspend fun InputStream.copyToSuspend(
     }
 }
 
-fun authenticationResponse(isAuthenticated: Boolean): Map<String, Boolean>  = mapOf("authenticated" to isAuthenticated)
+fun authenticationResponse(isAuthenticated: Boolean): Map<String, Boolean>  = mapOf("isAuthenticated" to isAuthenticated)
 
 
 data class LoginModel(val username: String, val password: String)
