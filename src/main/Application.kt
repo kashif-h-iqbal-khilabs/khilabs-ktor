@@ -18,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import main.Dao.users
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -73,15 +75,7 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         get("/") {
-            var userName = ""
-//            println("Cities: ${City.all().joinToString {it.name}}")
-            transaction {
-                for (user in users.selectAll()) {
-                        println("${user[users.username]} has password ${user[users.password]}")
-                    userName = user[users.username]
-                }
-            }
-            call.respondText(userName, contentType = ContentType.Text.Plain)
+            call.respondText("hello root", contentType = ContentType.Text.Plain)
 
         }
 
@@ -97,6 +91,24 @@ fun Application.module(testing: Boolean = false) {
                 if (frame is Frame.Text) {
                     send(Frame.Text("Client said: " + frame.readText()))
                 }
+            }
+        }
+
+        post("/login"){
+            val loginModel: LoginModel = call.receive<LoginModel>()
+            var username = ""
+
+            transaction {
+                val usersresults = users.select{(users.username.eq(loginModel.username) and users.password.eq(loginModel.password))}
+
+                for (user in usersresults){
+                    username = user[users.username]
+                }
+            }
+            if(username.isNotEmpty()){
+                call.respond(mapOf("authenticated" to true))
+            }else    {
+                call.respond(mapOf("authenticated" to false))
             }
         }
 
@@ -155,5 +167,5 @@ suspend fun InputStream.copyToSuspend(
     }
 }
 
-data class PostingModel(val username: String, val password: Int)
 
+data class LoginModel(val username: String, val password: String)

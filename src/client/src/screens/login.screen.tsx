@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { RouteComponentProps } from '@reach/router';
 import {
     Button,
@@ -21,6 +21,24 @@ export const LoginScreen = (props: LoginScreenProps) =>  {
         password: ''
     }
 
+
+    
+      useEffect(() =>{
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: 'kashif', password: 'password' })
+          };
+
+                // POST request
+        fetch('/login', requestOptions)
+           .then(response => response.status === 200 ? response.json() : { authenticated: 'false' })
+           .then(data => console.log('data response', data))
+        
+      }, [])
+
+  
+
     const [state, setState] = useState(initialState)
 
     const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +49,7 @@ export const LoginScreen = (props: LoginScreenProps) =>  {
     const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         // make backend call here -> probably a thunk
-        if (state.username == 'admin@littech.in' && state.password == 'secret') {
+        if (state.username === 'admin@littech.in' && state.password === 'secret') {
             alert('login in')
         } else {
             alert('Incorrect Credntials!');
