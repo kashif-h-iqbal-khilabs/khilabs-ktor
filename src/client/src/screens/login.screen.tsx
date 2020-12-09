@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { RouteComponentProps } from '@reach/router';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector, batch } from 'react-redux'
 import {
     Button,
     TextField,
@@ -12,7 +12,8 @@ import {
     Link,
 } from "@material-ui/core";
 import './style.css';
-import { onLoginRequestThunk } from "../store/authentication";
+import { onLoginRequest, onLoginRequestThunk } from "../store/authentication";
+import { ApplicationState } from "../store/configureStore";
 
 interface LoginScreenProps extends RouteComponentProps { }
 
@@ -24,7 +25,9 @@ export const LoginScreen = (props: LoginScreenProps) => {
     }
 
     const dispatch = useDispatch();
+    const authenticationSelector = (state: ApplicationState) => state.authentication
 
+    const authenticationState = useSelector(authenticationSelector)
 
     const [state, setState] = useState(initialState)
 
@@ -36,7 +39,10 @@ export const LoginScreen = (props: LoginScreenProps) => {
     const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         // make backend call here -> probably a thunk
-        dispatch(onLoginRequestThunk({ username: state.username, password: state.password }))
+        batch(()=> {
+           dispatch(onLoginRequestThunk({ username: state.username, password: state.password }))
+           dispatch(onLoginRequest())
+        })
     }
 
     return (
@@ -101,8 +107,13 @@ export const LoginScreen = (props: LoginScreenProps) => {
                                                 color="primary"
                                                 type="submit"
                                                 className="button-block"
+                                                disabled={authenticationState.isLoading}
                                             >
-                                                Submit
+                                                {
+                                                authenticationState.isLoading ?
+                                                '...loading' :  
+                                                'submit'
+                                                }
                                                 </Button>
                                         </Grid>
                                     </Grid>

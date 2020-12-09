@@ -1,13 +1,17 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import logger from "redux-logger";
 import thunk from "redux-thunk";
 import { authenticationReducer } from "./authentication";
 
 
+const rootReducer = combineReducers({
+    authentication: authenticationReducer
+})
+
+export type ApplicationState = ReturnType<typeof rootReducer>
+
 const store = configureStore({
-    reducer: {
-        authentication: authenticationReducer
-    },
+    reducer: rootReducer,
     middleware: [thunk, logger]
 })
 

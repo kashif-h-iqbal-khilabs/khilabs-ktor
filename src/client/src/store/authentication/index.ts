@@ -19,8 +19,8 @@ type onLoginResponseType = {
     isAuthenticated: boolean
 }
 
-const onLoginRequest = createAction(ON_LOGIN_REQUEST)
-const onLoginResponse = createAction<onLoginResponseType>(ON_LOGIN_RESPONSE)
+export const onLoginRequest = createAction(ON_LOGIN_REQUEST)
+export const onLoginResponse = createAction<onLoginResponseType>(ON_LOGIN_RESPONSE)
 
 export const authenticationReducer = createReducer(initialState, {
     [onLoginRequest.type]: (state) => ({ ...state, isLoading: true }),
