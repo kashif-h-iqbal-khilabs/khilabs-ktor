@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from '@reach/router';
 import { useDispatch, useSelector, batch } from 'react-redux'
 import {
@@ -35,10 +35,15 @@ export const LoginScreen = (props: LoginScreenProps) => {
         setState({ ...state, [evt.target.name]: evt.target.value })
     }
 
+    useEffect(()=>{
+        if(authenticationState.isAuthenticated){
+            props.navigate && props.navigate("/dashboard")
+        }
+    },[authenticationState.isAuthenticated])
+
 
     const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
-        // make backend call here -> probably a thunk
         batch(()=> {
            dispatch(onLoginRequestThunk({ username: state.username, password: state.password }))
            dispatch(onLoginRequest())
