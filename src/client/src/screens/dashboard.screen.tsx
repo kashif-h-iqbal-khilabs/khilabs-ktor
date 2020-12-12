@@ -19,27 +19,15 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import { RouteComponentProps } from '@reach/router';
-import { OverridableComponent } from '@material-ui/core/OverridableComponent';
-import { SvgIconTypeMap } from '@material-ui/core';
 
 const drawerWidth = 240;
 
-const ListItems: Array<{[K in ViewsType]?: JSX.Element}> =[{
-        'Upload': <CloudUploadIcon />,
-    },{
-        'Starred': <MailIcon />,
-    },{
-        'Trash': <InboxIcon />
-}]
 
-const DrawerListItems: {[Key: string]: JSX.Element} = {
+const DrawerListItems: {[Key in ViewsType]: JSX.Element} = {
     'Upload': <CloudUploadIcon />,
     'Starred': <MailIcon />,
     'Trash': <InboxIcon />
 }
-
-
-
 
 type ViewsType = 'Upload' | 'Starred' | 'Trash'
 
@@ -114,7 +102,7 @@ export const DashboardScreen = (props: DashboardScreenProps) => {
     const classes = useStyles();
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-    const [view, setView] = React.useState<string>('Upload');
+    const [view, setView] = React.useState<ViewsType>('Upload');
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -123,7 +111,7 @@ export const DashboardScreen = (props: DashboardScreenProps) => {
         setOpen(false);
     };
 
-    const handleItemClick = (view: string) => {
+    const handleItemClick = (view: ViewsType) => {
         setView(view)
     }
 
@@ -195,16 +183,26 @@ export const DashboardScreen = (props: DashboardScreenProps) => {
 
 
 type DrawerListComponentType = {
-    onClick: (view: string) => void
+    onClick: (view: ViewsType) => void
+}
+
+// this is to prevent type widening from string literal to string
+const constructMapOfKeys = () => {
+    const keys = Object.keys(DrawerListItems)
+    const ViewsTypesKeysArray: ViewsType[] = []
+    keys.forEach((key: string) => {
+           ViewsTypesKeysArray.push(key as ViewsType) 
+    });
+    return ViewsTypesKeysArray
 }
 
 
-const DrawerListItemsKeys = Object.keys(DrawerListItems)
+const DrawerListItemsKeys  = constructMapOfKeys()
 
 
 const DrawerListComponent = (props: DrawerListComponentType) => (
     <>
-        {DrawerListItemsKeys.map((view: string) => {
+        {DrawerListItemsKeys.map((view: ViewsType) => {
             return (
                 <ListItem button key={view} onClick={() => props.onClick(view)}>
                     <ListItemIcon>
@@ -219,13 +217,13 @@ const DrawerListComponent = (props: DrawerListComponentType) => (
 )
 
 const View1 = () => {
-    return  <Typography paragraph>Upload </Typography>
+    return  <Typography paragraph>Upload component </Typography>
 }
 
 const View2 = () => {
-    return  <Typography paragraph>Starred </Typography>
+    return  <Typography paragraph>Starred component </Typography>
 }
 
 const View3 = () => {
-    return  <Typography paragraph>Trash </Typography>
+    return  <Typography paragraph>Trash compoennt </Typography>
 }
