@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { createStyles, makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,23 +13,15 @@ import MenuIcon from '@material-ui/icons/Menu';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import { RouteComponentProps } from '@reach/router';
-
+import {DrawerList} from '../sharedComponents/drawerList/drawerList.component'
+import { UploadView } from '../views/upload/upload.view';
 const drawerWidth = 240;
 
 
-const DrawerListItems: {[Key in ViewsType]: JSX.Element} = {
-    'Upload': <CloudUploadIcon />,
-    'Starred': <MailIcon />,
-    'Trash': <InboxIcon />
-}
-
-type ViewsType = 'Upload' | 'Starred' | 'Trash'
+export type ViewsType = 'Upload' | 'Starred' | 'Trash'
 
 interface DashboardScreenProps extends RouteComponentProps { }
 
@@ -161,13 +153,13 @@ export const DashboardScreen = (props: DashboardScreenProps) => {
                 </div>
                 <Divider />
                 <List>
-                    <DrawerListComponent onClick={handleItemClick} />
+                    <DrawerList onClick={handleItemClick} />
                 </List>
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 { view === 'Upload' &&
-                    <View1 />
+                    <UploadView />
                 }
                 {   view === 'Starred' && 
                     <View2 />
@@ -178,46 +170,6 @@ export const DashboardScreen = (props: DashboardScreenProps) => {
             </main>
         </div>
     );
-}
-
-
-
-type DrawerListComponentType = {
-    onClick: (view: ViewsType) => void
-}
-
-// this is to prevent type widening from string literal to string
-const constructMapOfKeys = () => {
-    const keys = Object.keys(DrawerListItems)
-    const ViewsTypesKeysArray: ViewsType[] = []
-    keys.forEach((key: string) => {
-           ViewsTypesKeysArray.push(key as ViewsType) 
-    });
-    return ViewsTypesKeysArray
-}
-
-
-const DrawerListItemsKeys  = constructMapOfKeys()
-
-
-const DrawerListComponent = (props: DrawerListComponentType) => (
-    <>
-        {DrawerListItemsKeys.map((view: ViewsType) => {
-            return (
-                <ListItem button key={view} onClick={() => props.onClick(view)}>
-                    <ListItemIcon>
-                        {DrawerListItems[view]}
-                    </ListItemIcon>
-                    <ListItemText primary={view} />
-                </ListItem>
-            )
-        })
-        }
-    </>
-)
-
-const View1 = () => {
-    return  <Typography paragraph>Upload component </Typography>
 }
 
 const View2 = () => {
